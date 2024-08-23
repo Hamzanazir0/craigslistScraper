@@ -1,5 +1,3 @@
-# Selenium UI App with bugs and issues
-
 import tkinter as tk
 from tkinter import scrolledtext
 import threading
