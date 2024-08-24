@@ -51,6 +51,6 @@ Upon running the app. It sends initial request to main CraigsList website to fet
 - Keyword can be anything that you are looking for but categories are select few. Visit https://www.craigslist.org/about/sites or https://londonon.craigslist.org/ to see what categories are present in the cities. Eg **for sale, gigs etc**
 - Click **Start Button** and now the scrapper will start connecting to your google sheet, search for the keywords in all the selected cities and category and then save the response of each result in google sheet file.
 
-![alt text](image1.png)
+![alt text](image.png)
 
 ![alt text](image-1.png)
