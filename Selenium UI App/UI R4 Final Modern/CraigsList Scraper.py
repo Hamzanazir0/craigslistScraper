@@ -401,11 +401,18 @@ class GoogleSheetController:
             self.current_dir, sheet_info.credentials_file
         )
         self.google_sheet = self.connect_to_google_sheet()
+        self.check_connection = self.check_connection(self.google_sheet)
+
+    def check_connection(self, connection):
+        if not connection:
+            self.scraper.log("Google Sheets connection failed")
+            self.scraper.stop()
+            return False
 
     def connect_to_google_sheet(self):
         try:
             # Define the scope for Google Sheets and Google Drive API
-            self.scraper.log("Connecting to Google Sheets..")
+            self.scraper.log("Connecting to Google Sheets")
             scope = [
                 "https://spreadsheets.google.com/feeds",
                 "https://www.googleapis.com/auth/spreadsheets",
@@ -441,26 +448,25 @@ class GoogleSheetController:
 
         except gspread.exceptions.SpreadsheetNotFound:
             self.scraper.log(
-                "The Google Sheet with the name '%s' was not found.", self.sheet_name
+                f"The Google Sheet with the name {self.sheet_name} was not found."
             )
             return None
 
         except gspread.exceptions.WorksheetNotFound:
             self.scraper.log(
-                "The worksheet with the name '%s' was not found in the Google Sheet.",
-                self.sheet_page_name,
+                f"The worksheet with the name {self.sheet_page_name} was not found in the Google Sheet."
             )
             return None
 
         except FileNotFoundError:
             self.scraper.log(
-                "The credentials file '%s' was not found.", self.credentials_file
+                f"The credentials file {self.credentials_file} was not found."
             )
             return None
 
         except Exception as e:
             self.scraper.log(
-                "An error occurred while connecting to the Google Sheet: %s", str(e)
+                f"An error occurred while connecting to the Google Sheet: {str(e)}"
             )
             return None
 
@@ -852,8 +858,8 @@ def main():
         "SheetInfo", ["credentials_file", "sheet_name", "sheet_page_name"]
     )
     sheet_info = SheetInfo(
-        credentials_file="HamzaCred.json",
-        sheet_name="Craigslist Scraper Results",
+        credentials_file="credentials.json",
+        sheet_name="Craigslist Scraper",
         sheet_page_name="Sheet1",
     )
     app = QApplication(sys.argv)
