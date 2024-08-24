@@ -396,7 +396,11 @@ class GoogleSheetController:
         self.scraper = scraper
         self.sheet_name = sheet_info.sheet_name
         self.sheet_page_name = sheet_info.sheet_page_name
-        self.current_dir = os.path.dirname(os.path.abspath(__file__))
+        self.current_dir = None
+        if getattr(sys, "frozen", False):
+            self.current_dir = sys._MEIPASS
+        else:
+            self.current_dir = os.path.dirname(os.path.abspath(__file__))
         self.credentials_file = os.path.join(
             self.current_dir, sheet_info.credentials_file
         )
