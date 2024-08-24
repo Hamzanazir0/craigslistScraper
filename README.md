@@ -51,6 +51,24 @@ Upon running the app. It sends initial request to main CraigsList website to fet
 - Keyword can be anything that you are looking for but categories are select few. Visit https://www.craigslist.org/about/sites or https://londonon.craigslist.org/ to see what categories are present in the cities. Eg **for sale, gigs etc**
 - Click **Start Button** and now the scrapper will start connecting to your google sheet, search for the keywords in all the selected cities and category and then save the response of each result in google sheet file.
 
-![alt text](image.png)
+![Image](image.png)
+![Image](image-2.png)
+![Image](image-1.png)
 
-![alt text](image-1.png)
+## Features
+
+- Cool and Responsive UI
+- Proper Error handling and console outputs
+- Fast and Efficient Scraping
+- Standalone app
+
+## Technologies
+
+- Python
+- Requests and Selenium
+- Threading and QThread
+- PySide6 UI Library
+- Gspread for Google Sheets
+- OOP
+
+Hope my program is of help. Happy Coding 😁
