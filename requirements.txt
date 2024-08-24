@@ -1,0 +1,6 @@
+requests
+gspread
+PySide6
+oauth2client
+scrapy
+selenium
