@@ -66,11 +66,7 @@ class CraigslistScraper(QThread):
             "sec-ch-ua-mobile": "?0",
             "sec-ch-ua-platform": '"Windows"',
         }
-        # self.default_response_fetched = False
-        # self.default_city_response_fetched = False
-        # if not self.default_response_fetched:
         self.default_response = self.fetch_url(self.default_url)
-        # if not self.default_city_response_fetched:
         self.default_city_response = self.fetch_url(self.default_city_url)
         self.scraping = False
         self.driver = None
@@ -80,18 +76,9 @@ class CraigslistScraper(QThread):
         self.log_signal.emit(message)
 
     def fetch_url(self, url, retries=3):
-        print(f"I am running {url}")
         for attempt in range(retries):
             response = requests.get(url, headers=self.headers)
             if response.status_code == 200:
-                # if not self.default_response_fetched:
-                #     self.default_response_fetched = True
-                # if (
-                #     not self.default_city_response_fetched
-                #     and self.default_response_fetched
-                # ):
-                #     self.default_city_response_fetched = True
-                print(f"Done")
                 return response
             else:
                 self.log(
@@ -100,7 +87,6 @@ class CraigslistScraper(QThread):
         self.log(
             f"[Error] Failed to get a successful response after {retries} attempts for {url}"
         )
-        print(f"Done Error")
         return None
 
     def scrape(self):
@@ -114,131 +100,59 @@ class CraigslistScraper(QThread):
             for index, city in enumerate(self.selected_canadian_cities, start=1):
                 city_name = city.text()
                 city_url = city.data(Qt.UserRole)
-                # city_url = self.update_city_url(city_url)
                 if self.stop_event.is_set():
                     break
                 self.log(
-                    f"\n[{self.selected_country} | {city_name}] Scraping city {index}/{len(self.selected_canadian_cities)}"
+                    f"\n[{self.selected_country} | {city_name}] Scraping city {index}/{len(self.selected_canadian_cities)}\n\n"
                 )
-                # city_page_response = self.fetch_url(city_url)
                 self.scrape_categories(city_url, city_name)
-                # if city_page_response:
-                # else:
-                #     self.log(
-                #         f"Response not found for city {city_name} moving to next city..."
-                #     )
+
         if self.selected_country == "US":
             self.processing_country = self.selected_country
             for index, city in enumerate(self.selected_us_cities, start=1):
                 city_name = city.text()
                 city_url = city.data(Qt.UserRole)
-                # city_url = self.update_city_url(city_url)
                 if self.stop_event.is_set():
                     break
                 self.log(
-                    f"\n[{self.selected_country} | {city_name}] Scraping city {index}/{len(self.selected_us_cities)}"
+                    f"\n[{self.selected_country} | {city_name}] Scraping city {index}/{len(self.selected_us_cities)}\n\n"
                 )
-                # city_page_response = self.fetch_url(city_url)
                 self.scrape_categories(city_url, city_name)
-                # if city_page_response:
-                # else:
-                #     self.log(
-                #         f"Response not found for city {city_name} moving to next city..."
-                #     )
         if self.selected_country == "Canada & US":
             self.processing_country = "Canada"
             for index, city in enumerate(self.selected_canadian_cities, start=1):
                 city_name = city.text()
                 city_url = city.data(Qt.UserRole)
-                # city_url = self.update_city_url(city_url)
                 if self.stop_event.is_set():
                     break
                 self.log(
-                    f"\n[{self.processing_country} | {city_name}] Scraping city {index}/{len(self.selected_canadian_cities)}"
+                    f"\n[{self.processing_country} | {city_name}] Scraping city {index}/{len(self.selected_canadian_cities)}\n\n"
                 )
-                # city_page_response = self.fetch_url(city_url)
                 self.scrape_categories(city_url, city_name)
-                # if city_page_response:
-                # else:
-                #     self.log(
-                #         f"Response not found for city {city_name} moving to next city..."
-                #     )
-            self.log(f"\nSelected cities from {self.processing_country} scrapped.\n")
+            self.log(f"\n\nSelected cities from {self.processing_country} scrapped.\n")
             self.processing_country = "US"
             for index, city in enumerate(self.selected_us_cities, start=1):
                 city_name = city.text()
                 city_url = city.data(Qt.UserRole)
-                # city_url = self.update_city_url(city_url)
                 if self.stop_event.is_set():
                     break
                 self.log(
-                    f"\n[{self.processing_country} | {city_name}] Scraping city {index}/{len(self.selected_us_cities)}"
+                    f"\n[{self.processing_country} | {city_name}] Scraping city {index}/{len(self.selected_us_cities)}\n\n"
                 )
-                # city_page_response = self.fetch_url(city_url)
                 self.scrape_categories(city_url, city_name)
-                # if city_page_response:
-                #     city_url = city_page_response.url
-                #     print(f"City URL: {city_url}")
-                # else:
-                #     self.log(
-                #         f"Response not found for city {city_name} moving to next city..."
-                #     )
-
-    # def update_city_url(self, url):
-    #     parsed_url = urlparse(url)
-    #     updated_url = parsed_url._replace(path="/", query=urlencode({"lang": "en"}))
-    #     return urlunparse(updated_url)
 
     def scrape_categories(self, city_url, city_name):
         for index, category in enumerate(self.category, start=1):
-            self.log(
-                f"[{self.processing_country} | {city_name}] Searching Category ###{category.text()}### in City Page {city_url}\n"
-            )
-
-            self.log(f"Getting Categories Page URL")
             category_page_url = self.get_category_page_url(city_url, category)
-            self.log(f"Category URL : {category_page_url}")
             if category_page_url:
                 self.scrape_posts_selenium(
                     category_page_url, category.text(), city_name
                 )
-        # if category_page_url_unfiltered:
-        #     category_page_url = self.update_category_url(category_page_url_unfiltered)
 
     def get_category_page_url(self, base_url, category):
-        # /search/ccc?cc=us&lang=en#search=1~thumb~0~0
         return (
             base_url + category.data(Qt.UserRole) + "?cc=us&lang=en#search=1~thumb~0~0"
         )
-
-    # def update_category_url(self, url):
-    #     parsed_url = urlparse(url)
-    #     fragment = parsed_url.fragment
-    #     new_search_query = "1~thumb~0~0"
-
-    #     if "#search" in url:
-    #         fragment_parts = fragment.split("=", 1)
-    #         if len(fragment_parts) > 1:
-    #             if "thumb" not in fragment_parts[1]:
-    #                 updated_fragment = f"search={new_search_query}"
-    #             else:
-    #                 updated_fragment = fragment
-    #         else:
-    #             updated_fragment = f"search={new_search_query}"
-    #     else:
-    #         updated_fragment = f"search={new_search_query}"
-
-    #     updated_url = urlunparse(
-    #         (
-    #             parsed_url.scheme,
-    #             parsed_url.netloc,
-    #             parsed_url.path,
-    #             parsed_url.params,
-    #             parsed_url.query,
-    #             updated_fragment,
-    #         )
-    #     )
-    #     return updated_url
 
     def scrape_posts_selenium(self, category_page_url, category, city_name):
         self.driver = webdriver.Chrome()
@@ -275,13 +189,15 @@ class CraigslistScraper(QThread):
                     self.process_posts(post_elements, category, city_name)
                 else:
                     self.log(
-                        f"[{self.processing_country} | {city_name}] No posts found for '{self.keyword}' in '{self.category}' on page {page_num + 1}/{total_pages}."
+                        f"[{self.processing_country} | {city_name}] No posts found for '{self.keyword}' in '{category}' on page {page_num + 1}/{total_pages}."
                     )
                 next_button = paginator.find_element(
                     By.CSS_SELECTOR, "button.bd-button.cl-next-page"
                 )
                 if "bd-disabled" in next_button.get_attribute("class"):
-                    self.log(f"Reached last page in {city_name}")
+                    self.log(
+                        f"\n[{self.processing_country} | {city_name}] Reached last page of {category}\n\n"
+                    )
                     break
 
                 next_button.click()
@@ -413,14 +329,6 @@ class GoogleSheetController:
         self.scraper = scraper
         self.sheet_name = sheet_info.sheet_name
         self.sheet_page_name = sheet_info.sheet_page_name
-        # self.current_dir = None
-        # if getattr(sys, "frozen", False):
-        #     self.current_dir = sys._MEIPASS
-        # else:
-        #     self.current_dir = os.path.dirname(os.path.abspath(__file__))
-        # self.credentials_file = os.path.join(
-        #     self.current_dir, sheet_info.credentials_file
-        # )
         self.credentials_file = sheet_info.credentials_file
         self.google_sheet = self.connect_to_google_sheet()
         self.check_connection = self.check_connection(self.google_sheet)
@@ -647,14 +555,9 @@ class CraigslistScraperUI(QMainWindow):
         # Keyword and Category Inputs
         self.keyword_label = QLabel("Keyword:")
         self.keyword_input = QLineEdit(self)
-        # self.category_label = QLabel("Category:")
-        # self.category_input = QLineEdit(self)
-
         input_layout = QGridLayout()
         input_layout.addWidget(self.keyword_label, 0, 0)
         input_layout.addWidget(self.keyword_input, 1, 0)
-        # input_layout.addWidget(self.category_label, 0, 1)
-        # input_layout.addWidget(self.category_input, 1, 1)
 
         # Category Layout Making
         input_and_category_layout = QGridLayout()
@@ -1049,9 +952,6 @@ class CraigslistScraperUI(QMainWindow):
         if not keyword:
             self.update_log("Please enter a keyword.")
             return
-        # if not category:
-        #     self.update_log("Please select a category.")
-        #     return
         if self.scraper_thread and self.scraper_thread.isRunning():
             return
         self.update_log("Scraper Initializing...")
